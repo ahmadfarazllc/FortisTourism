@@ -1,0 +1,165 @@
+Project Title: Fortis Tourism - The Future of Travel Exploration (Full Marketplace with Backend)
+
+Objective: To design a cutting-edge, visually stunning, and highly intuitive UI/UX for Fortis Tourism, a futuristic travel marketplace, coupled with the definition of a robust and scalable backend architecture that supports all platform functionalities and data management.
+
+Core Aesthetic & Theme (Remains the same as previous brief):
+
+Overall Feel: Futuristic, sleek, advanced, premium, immersive, trustworthy.
+Color Palette: Dominantly a dark, sophisticated base (deep navy, charcoal grey, obsidian black). Neon Blue and Vibrant Purple will be used for accents, glowing elements, highlights, and interactive states.
+Key UI Elements:
+Glassmorphism: Cards, modals, panels with blurred, translucent glass-like effects.
+Holographic Elements: Buttons, icons, data visualizations, previews with subtle holographic textures and shimmering effects.
+Neon Glows: Text, borders, interactive elements with soft, pulsating neon glows.
+Micro-animations: Smooth, subtle animations for transitions, hover states, loading, and interactive feedback.
+3D Interactivity: Engaging 3D interactive elements where applicable (globe, destination previews).
+Web3-Inspired: Aesthetic drawing from Web3's advanced, often holographic and digital-native visual language.
+I. Front-end UI/UX Sections & Interactivity (with Backend Integration Notes):
+A. Landing Page:
+Interactive 3D Globe:
+UI: As described previously.
+Backend Interaction:
+Data Fetching: Globe rendering needs to fetch destination data (coordinates, names, basic info) from the backend API.
+Hover Data: On hover, backend should provide sufficient data for the tooltip/preview.
+Click Action: Clicking a marker triggers an API call to fetch detailed destination information, initiating the exploration flow.
+Filtering: Category tags should trigger API calls with specific filter parameters.
+AI-Powered Search Bar:
+UI: As described previously (text + voice).
+Backend Interaction:
+Search Queries: All text and transcribed voice search queries are sent to the backend AI search engine.
+API Endpoint: A dedicated search API endpoint for real-time suggestions and results.
+Recommendation Engine: Backend AI processes search queries to return relevant destination matches, potentially with associated metadata for previews.
+Cinematic Destination Previews:
+UI: As described previously.
+Backend Interaction:
+Media Hosting: Backend needs to store and serve high-quality video/image assets.
+Content Delivery: Efficient content delivery network (CDN) integration for fast streaming.
+Category Tags:
+UI: As described previously.
+Backend Interaction: Tags are used as query parameters for filtering destination data served via API.
+B. User Dashboard:
+Profile Management:
+UI: As described previously.
+Backend Interaction:
+User Data Storage: User profiles, preferences, saved destinations, and wishlist items are stored in the backend database, linked to user accounts.
+CRUD Operations: APIs for creating, reading, updating, and deleting user profile information and preferences.
+Saved Destinations/Wishlist: API endpoints for adding/removing destinations from user-specific lists.
+My Bookings:
+UI: As described previously (futuristic cards).
+Backend Interaction:
+Booking Data: Backend stores all booking details (trip ID, user ID, destination ID, dates, itinerary, payment status, etc.).
+API Endpoints: Fetching lists of upcoming and past bookings for a logged-in user.
+Booking Management: API endpoints to retrieve specific booking details for modification or cancellation (if allowed).
+Wishlist:
+UI: As described previously (holographic previews).
+Backend Interaction:
+Wishlist Data: Stored in the user's profile in the backend.
+API Endpoints: Fetching wishlist items, adding/removing destinations, and potentially triggering preview generation.
+AI-Powered Recommendations:
+UI: As described previously.
+Backend Interaction:
+Recommendation Engine: Backend AI analyzes user data (preferences, past bookings, browsing history) to generate personalized recommendations.
+API Endpoint: A dedicated API to retrieve these recommendations for the user.
+Support:
+UI: Chat/ticket system interface.
+Backend Interaction:
+Messaging System: Backend infrastructure to handle real-time chat messages (WebSockets) and persistent ticket storage.
+Database: Storing chat logs and ticket information.
+User Support Management: Backend logic for routing tickets, managing agent responses, and updating ticket status.
+C. Admin Dashboard:
+Analytics Panel:
+UI: Futuristic charts.
+Backend Interaction:
+Data Aggregation: Backend performs data aggregation from bookings, user activity, and transaction logs.
+API Endpoints: Providing summarized data points for charts (e.g., count of bookings per day, total revenue per month).
+Real-time Data: Streams or frequent polling for real-time metrics like active users.
+Destination Management:
+UI: Interface for adding/editing/removing destinations with media uploads.
+Backend Interaction:
+Database Management: CRUD operations for destination data (CRUD for destinations).
+File Storage: Backend integrates with cloud storage (e.g., AWS S3, Google Cloud Storage) for media uploads.
+API Endpoints: Admin API endpoints for all destination management operations.
+User Management:
+UI: Interface for verifying, blocking, resetting accounts.
+Backend Interaction:
+User Data Modification: APIs to update user account statuses (verified, blocked) and reset credentials.
+Authentication/Authorization: Backend handles user authentication and authorization for admin actions.
+Transaction Monitoring:
+UI: Displaying Stripe logs.
+Backend Interaction:
+Stripe Integration: Direct integration with the Stripe API to fetch transaction data.
+Data Storage: Caching or storing relevant transaction details for efficient admin dashboard display.
+API Endpoints: Fetching transaction logs with filtering and search capabilities.
+AI Insights:
+UI: AI-generated insights.
+Backend Interaction:
+AI Model Deployment: Backend hosts and runs AI models for trend analysis, demand forecasting, etc.
+Data Sources: Models draw data from bookings, user activity, and external market data (if integrated).
+API Endpoints: Serving insights generated by the AI models.
+D. Checkout Flow:
+3D Card-Style Trip Builder:
+UI: As described previously.
+Backend Interaction:
+Component Selection: User selections (flights, hotels, activities) are sent to the backend to validate availability and pricing in real-time.
+Dynamic Pricing: Backend calculates and updates the total trip cost as components are added/modified.
+Session Management: Temporary storage of the user's trip configuration during the build process.
+Stripe Payment Integration:
+UI: Modern card input UI.
+Backend Interaction:
+Payment Initiation: When the user proceeds to pay, the backend securely communicates with Stripe to create a payment intent.
+Tokenization: Stripe Elements handle sensitive card data, returning a secure token to the frontend.
+Payment Processing: The frontend sends the token and payment intent to the backend for final processing via Stripe's API.
+Confirmation Handling: Backend receives confirmation from Stripe and updates the booking status.
+"Book & Go" Button:
+UI: As described previously.
+Backend Interaction:
+Trigger Payment: Clicking the button initiates the backend payment processing flow.
+Booking Creation: Upon successful payment confirmation from Stripe, the backend creates a permanent booking record in the database.
+Animated Confirmation Screen:
+UI: As described previously.
+Backend Interaction:
+Data Display: Backend provides the confirmation details (booking ID, itinerary summary) to be displayed on this screen.
+Notification System: Potential backend trigger for sending confirmation emails/SMS to the user.
+II. Back-end Architecture & Core Components:
+API Gateway: A central entry point for all client requests, managing authentication, rate limiting, and routing to appropriate services.
+Microservices Architecture (Recommended):
+User Service: Manages user registration, authentication, profiles, and preferences.
+Destination Service: Manages destination data (CRUD), media assets, and pricing information.
+Booking Service: Handles booking creation, management, and status updates.
+Payment Service: Integrates with Stripe for payment processing, transaction logging, and refunds.
+Search Service: Powered by an AI-driven search engine (e.g., Elasticsearch with NLP capabilities) for intelligent destination discovery.
+Recommendation Service: Hosts and runs AI models for personalized destination recommendations.
+Community Service: Manages user-generated content (stories, photos, videos), AR overlays, and social interactions.
+Support Service: Handles the chat and ticketing system, potentially integrating with WebSockets for real-time communication.
+Analytics Service: Aggregates data and provides APIs for the admin dashboard's analytics.
+AI Insights Service: Runs AI models for market analysis and provides insights to the admin.
+Database Layer:
+Relational Database (e.g., PostgreSQL, MySQL): For structured data like user profiles, bookings, destination details, and transactions.
+NoSQL Database (e.g., MongoDB): Potentially for flexible data structures like community posts, chat logs, or user activity streams.
+Caching Layer (e.g., Redis): To improve performance for frequently accessed data like popular destinations, user sessions, and pre-computed recommendations.
+File Storage: Cloud-based object storage (e.g., AWS S3, Google Cloud Storage) for storing images, videos, and potentially 3D model assets.
+CDN (Content Delivery Network): For fast and efficient delivery of static assets (images, videos, scripts) globally.
+AI/ML Platform: Infrastructure to host, train, and deploy AI models for search and recommendations.
+Real-time Communication: WebSockets for the chat system and potentially for live updates on leaderboards or booking statuses.
+Stripe Integration: Secure implementation of Stripe's APIs for payments, webhooks for event handling.
+Security: Robust authentication (e.g., JWT), authorization, data encryption (at rest and in transit), and protection against common web vulnerabilities (OWASP Top 10).
+III. Front-end / Back-end Interaction Design:
+API Design: RESTful APIs or GraphQL for communication between front-end clients and backend services.
+Data Contracts: Clearly defined data structures and formats for requests and responses.
+Error Handling: Consistent and informative error handling across all API interactions.
+State Management: Front-end state management needs to reflect data fetched from the backend and handle loading/error states gracefully.
+Deliverables:
+
+Front-end:
+High-fidelity UI mockups for all specified sections.
+Interactive prototypes demonstrating key user flows and micro-animations.
+Detailed UI style guide.
+Asset library for UI elements.
+Back-end:
+High-level backend architecture diagram.
+Detailed API specifications (e.g., OpenAPI/Swagger documentation) for all services.
+Data models and schema definitions for databases.
+Description of chosen technologies and rationale.
+Outline of key microservices and their responsibilities.
+Explanation of Stripe integration points and data flow.
+Approach to AI model integration and data flow.
+Security considerations and proposed measures.
