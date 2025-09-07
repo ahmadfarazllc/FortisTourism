@@ -1,9 +1,25 @@
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { Calendar, MapPin, Star, Settings, Heart, BookOpen } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../lib/supabase'
 
-import type { SelectBooking, SelectWishlist, SelectDestination } from '@shared/schema'
+interface Booking {
+  id: string
+  destinationName: string
+  startDate: string
+  endDate: string
+  travelers: number
+  totalPrice: number
+  status: string
+  paymentStatus: string
+}
+
+interface WishlistItem {
+  id: string
+  destinationName: string
+  createdAt: string
+}
 
 const tabs = [
   { id: 'bookings', label: 'My Bookings', icon: Calendar },
@@ -13,14 +29,32 @@ const tabs = [
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('bookings')
+  const { user } = useAuth()
+  const [bookings, setBookings] = useState<Booking[]>([])
+  const [wishlist, setWishlist] = useState<WishlistItem[]>([])
+  const [loading, setLoading] = useState(false)
 
-  const { data: bookings = [], isLoading: bookingsLoading } = useQuery<SelectBooking[]>({
-    queryKey: ['/api/bookings'],
-  })
+  // Mock data for now - replace with Supabase queries
+  const mockBookings: Booking[] = [
+    {
+      id: '1',
+      destinationName: 'Paris, France',
+      startDate: '2024-03-15',
+      endDate: '2024-03-22',
+      travelers: 2,
+      totalPrice: 5000,
+      status: 'confirmed',
+      paymentStatus: 'paid'
+    }
+  ]
 
-  const { data: wishlist = [], isLoading: wishlistLoading } = useQuery<SelectWishlist[]>({
-    queryKey: ['/api/wishlist'],
-  })
+  const mockWishlist: WishlistItem[] = [
+    {
+      id: '1',
+      destinationName: 'Bali, Indonesia',
+      createdAt: '2024-01-15'
+    }
+  ]
 
   const renderBookings = () => (
     <div className="space-y-6">
@@ -29,11 +63,11 @@ export default function Dashboard() {
         <span className="text-white/60">{bookings.length} {bookings.length === 1 ? 'booking' : 'bookings'}</span>
       </div>
 
-      {bookingsLoading ? (
+      {loading ? (
         <div className="flex justify-center py-12">
           <div className="animate-spin w-8 h-8 border-4 border-neon-blue border-t-transparent rounded-full"></div>
         </div>
-      ) : bookings.length === 0 ? (
+      ) : mockBookings.length === 0 ? (
         <div className="text-center py-12">
           <BookOpen className="h-16 w-16 text-white/20 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-white/60 mb-2">No bookings yet</h3>
@@ -41,7 +75,7 @@ export default function Dashboard() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {bookings.map((booking, index) => (
+          {mockBookings.map((booking, index) => (
             <motion.div
               key={booking.id}
               initial={{ opacity: 0, y: 30 }}
@@ -53,7 +87,7 @@ export default function Dashboard() {
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-lg font-bold text-white" data-testid={`text-booking-destination-${booking.id}`}>
-                    Destination Booking
+                    {booking.destinationName}
                   </h3>
                   <p className="text-white/60 text-sm">Booking ID: {booking.id}</p>
                 </div>
@@ -116,11 +150,11 @@ export default function Dashboard() {
         <span className="text-white/60">{wishlist.length} {wishlist.length === 1 ? 'destination' : 'destinations'}</span>
       </div>
 
-      {wishlistLoading ? (
+      {loading ? (
         <div className="flex justify-center py-12">
           <div className="animate-spin w-8 h-8 border-4 border-neon-blue border-t-transparent rounded-full"></div>
         </div>
-      ) : wishlist.length === 0 ? (
+      ) : mockWishlist.length === 0 ? (
         <div className="text-center py-12">
           <Heart className="h-16 w-16 text-white/20 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-white/60 mb-2">Your wishlist is empty</h3>
@@ -128,7 +162,7 @@ export default function Dashboard() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {wishlist.map((item, index) => (
+          {mockWishlist.map((item, index) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -139,7 +173,7 @@ export default function Dashboard() {
             >
               <div className="h-40 bg-gradient-to-br from-neon-blue/20 to-neon-purple/20" />
               <div className="p-4">
-                <h3 className="font-bold text-white mb-2">Saved Destination</h3>
+                <h3 className="font-bold text-white mb-2">{item.destinationName}</h3>
                 <p className="text-white/60 text-sm mb-4">Added on {new Date(item.createdAt).toLocaleDateString()}</p>
                 <button className="w-full bg-gradient-to-r from-red-500 to-red-600 py-2 rounded-lg hover:shadow-lg transition-all duration-300 text-sm">
                   Remove from Wishlist
@@ -164,7 +198,7 @@ export default function Dashboard() {
             <input
               type="email"
               className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-neon-blue"
-              placeholder="your@email.com"
+              defaultValue={user?.email || ''}
               data-testid="input-profile-email"
             />
           </div>
@@ -173,7 +207,10 @@ export default function Dashboard() {
             <input
               type="text"
               className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-neon-blue"
-              placeholder="Your full name"
+              defaultValue={user?.user_metadata?.firstName && user?.user_metadata?.lastName 
+                ? `${user.user_metadata.firstName} ${user.user_metadata.lastName}` 
+                : ''
+              }
               data-testid="input-profile-name"
             />
           </div>
