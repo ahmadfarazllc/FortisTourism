@@ -309,7 +309,7 @@ export async function registerRoutes(app) {
 
       const customer = await stripe.customers.create({
         email: user.email,
-        name: \`\${user.firstName} \${user.lastName}\`,
+        name: `${user.firstName} ${user.lastName}`,
       });
 
       user = await storage.updateStripeCustomerId(user.id, customer.id);

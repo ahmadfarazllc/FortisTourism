@@ -1,69 +1,27 @@
-import type { 
-  SelectUser, 
-  InsertUser, 
-  SelectDestination, 
-  InsertDestination, 
-  SelectBooking, 
-  InsertBooking, 
-  SelectWishlist, 
-  InsertWishlist 
+import {
+  User,
+  Destination,
+  Booking,
+  Wishlist,
 } from "../shared/schema.js";
 
-export interface IStorage {
-  // User methods
-  createUser(user: InsertUser): Promise<SelectUser>;
-  getUserById(id: string): Promise<SelectUser | null>;
-  getUserByEmail(email: string): Promise<SelectUser | null>;
-  updateUser(id: string, updates: Partial<InsertUser>): Promise<SelectUser>;
-  updateStripeCustomerId(userId: string, customerId: string): Promise<SelectUser>;
-  updateUserStripeInfo(userId: string, info: { customerId: string; subscriptionId: string }): Promise<SelectUser>;
-  
-  // Destination methods
-  getAllDestinations(): Promise<SelectDestination[]>;
-  getDestinationById(id: string): Promise<SelectDestination | null>;
-  getDestinationsByCategory(category: string): Promise<SelectDestination[]>;
-  getPopularDestinations(): Promise<SelectDestination[]>;
-  searchDestinations(query: string): Promise<SelectDestination[]>;
-  createDestination(destination: InsertDestination): Promise<SelectDestination>;
-  updateDestination(id: string, updates: Partial<InsertDestination>): Promise<SelectDestination>;
-  deleteDestination(id: string): Promise<void>;
-  
-  // Booking methods
-  createBooking(booking: InsertBooking): Promise<SelectBooking>;
-  getBookingById(id: string): Promise<SelectBooking | null>;
-  getUserBookings(userId: string): Promise<SelectBooking[]>;
-  updateBooking(id: string, updates: Partial<InsertBooking>): Promise<SelectBooking>;
-  deleteBooking(id: string): Promise<void>;
-  
-  // Wishlist methods
-  addToWishlist(wishlist: InsertWishlist): Promise<SelectWishlist>;
-  removeFromWishlist(userId: string, destinationId: string): Promise<void>;
-  getUserWishlist(userId: string): Promise<SelectWishlist[]>;
-  
-  // Analytics methods (for admin)
-  getBookingStats(): Promise<any>;
-  getUserStats(): Promise<any>;
-  getRevenueStats(): Promise<any>;
-}
-
 // In-memory storage implementation
-export class MemStorage implements IStorage {
-  private users: Map<string, SelectUser> = new Map();
-  private destinations: Map<string, SelectDestination> = new Map();
-  private bookings: Map<string, SelectBooking> = new Map();
-  private wishlist: Map<string, SelectWishlist> = new Map();
-
+export class MemStorage {
   constructor() {
+    this.users = new Map();
+    this.destinations = new Map();
+    this.bookings = new Map();
+    this.wishlist = new Map();
     this.seedData();
   }
 
-  private generateId(): string {
+  generateId() {
     return Math.random().toString(36).substr(2, 9);
   }
 
-  private seedData() {
+  seedData() {
     // Seed popular destinations
-    const sampleDestinations: SelectDestination[] = [
+    const sampleDestinations = [
       {
         id: "dest_1",
         name: "Paris",
@@ -148,8 +106,8 @@ export class MemStorage implements IStorage {
   }
 
   // User methods
-  async createUser(user: InsertUser): Promise<SelectUser> {
-    const newUser: SelectUser = {
+  async createUser(user) {
+    const newUser = {
       ...user,
       id: this.generateId(),
       createdAt: new Date(),
@@ -158,11 +116,11 @@ export class MemStorage implements IStorage {
     return newUser;
   }
 
-  async getUserById(id: string): Promise<SelectUser | null> {
+  async getUserById(id) {
     return this.users.get(id) || null;
   }
 
-  async getUserByEmail(email: string): Promise<SelectUser | null> {
+  async getUserByEmail(email) {
     const users = Array.from(this.users.values());
     for (const user of users) {
       if (user.email === email) {
@@ -172,7 +130,7 @@ export class MemStorage implements IStorage {
     return null;
   }
 
-  async updateUser(id: string, updates: Partial<InsertUser>): Promise<SelectUser> {
+  async updateUser(id, updates) {
     const user = this.users.get(id);
     if (!user) throw new Error("User not found");
     
@@ -181,11 +139,11 @@ export class MemStorage implements IStorage {
     return updatedUser;
   }
 
-  async updateStripeCustomerId(userId: string, customerId: string): Promise<SelectUser> {
+  async updateStripeCustomerId(userId, customerId) {
     return this.updateUser(userId, { stripeCustomerId: customerId });
   }
 
-  async updateUserStripeInfo(userId: string, info: { customerId: string; subscriptionId: string }): Promise<SelectUser> {
+  async updateUserStripeInfo(userId, info) {
     return this.updateUser(userId, { 
       stripeCustomerId: info.customerId, 
       stripeSubscriptionId: info.subscriptionId 
@@ -193,23 +151,23 @@ export class MemStorage implements IStorage {
   }
 
   // Destination methods
-  async getAllDestinations(): Promise<SelectDestination[]> {
+  async getAllDestinations() {
     return Array.from(this.destinations.values());
   }
 
-  async getDestinationById(id: string): Promise<SelectDestination | null> {
+  async getDestinationById(id) {
     return this.destinations.get(id) || null;
   }
 
-  async getDestinationsByCategory(category: string): Promise<SelectDestination[]> {
+  async getDestinationsByCategory(category) {
     return Array.from(this.destinations.values()).filter(dest => dest.category === category);
   }
 
-  async getPopularDestinations(): Promise<SelectDestination[]> {
+  async getPopularDestinations() {
     return Array.from(this.destinations.values()).filter(dest => dest.isPopular);
   }
 
-  async searchDestinations(query: string): Promise<SelectDestination[]> {
+  async searchDestinations(query) {
     const lowercaseQuery = query.toLowerCase();
     return Array.from(this.destinations.values()).filter(dest => 
       dest.name.toLowerCase().includes(lowercaseQuery) ||
@@ -218,8 +176,8 @@ export class MemStorage implements IStorage {
     );
   }
 
-  async createDestination(destination: InsertDestination): Promise<SelectDestination> {
-    const newDestination: SelectDestination = {
+  async createDestination(destination) {
+    const newDestination = {
       ...destination,
       id: this.generateId(),
       createdAt: new Date(),
@@ -228,7 +186,7 @@ export class MemStorage implements IStorage {
     return newDestination;
   }
 
-  async updateDestination(id: string, updates: Partial<InsertDestination>): Promise<SelectDestination> {
+  async updateDestination(id, updates) {
     const destination = this.destinations.get(id);
     if (!destination) throw new Error("Destination not found");
     
@@ -237,13 +195,13 @@ export class MemStorage implements IStorage {
     return updatedDestination;
   }
 
-  async deleteDestination(id: string): Promise<void> {
+  async deleteDestination(id) {
     this.destinations.delete(id);
   }
 
   // Booking methods
-  async createBooking(booking: InsertBooking): Promise<SelectBooking> {
-    const newBooking: SelectBooking = {
+  async createBooking(booking) {
+    const newBooking = {
       ...booking,
       id: this.generateId(),
       createdAt: new Date(),
@@ -252,15 +210,15 @@ export class MemStorage implements IStorage {
     return newBooking;
   }
 
-  async getBookingById(id: string): Promise<SelectBooking | null> {
+  async getBookingById(id) {
     return this.bookings.get(id) || null;
   }
 
-  async getUserBookings(userId: string): Promise<SelectBooking[]> {
+  async getUserBookings(userId) {
     return Array.from(this.bookings.values()).filter(booking => booking.userId === userId);
   }
 
-  async updateBooking(id: string, updates: Partial<InsertBooking>): Promise<SelectBooking> {
+  async updateBooking(id, updates) {
     const booking = this.bookings.get(id);
     if (!booking) throw new Error("Booking not found");
     
@@ -269,13 +227,13 @@ export class MemStorage implements IStorage {
     return updatedBooking;
   }
 
-  async deleteBooking(id: string): Promise<void> {
+  async deleteBooking(id) {
     this.bookings.delete(id);
   }
 
   // Wishlist methods
-  async addToWishlist(wishlist: InsertWishlist): Promise<SelectWishlist> {
-    const newWishlist: SelectWishlist = {
+  async addToWishlist(wishlist) {
+    const newWishlist = {
       ...wishlist,
       id: this.generateId(),
       createdAt: new Date(),
@@ -284,7 +242,7 @@ export class MemStorage implements IStorage {
     return newWishlist;
   }
 
-  async removeFromWishlist(userId: string, destinationId: string): Promise<void> {
+  async removeFromWishlist(userId, destinationId) {
     const entries = Array.from(this.wishlist.entries());
     for (const [id, item] of entries) {
       if (item.userId === userId && item.destinationId === destinationId) {
@@ -294,12 +252,12 @@ export class MemStorage implements IStorage {
     }
   }
 
-  async getUserWishlist(userId: string): Promise<SelectWishlist[]> {
+  async getUserWishlist(userId) {
     return Array.from(this.wishlist.values()).filter(item => item.userId === userId);
   }
 
   // Analytics methods
-  async getBookingStats(): Promise<any> {
+  async getBookingStats() {
     const bookings = Array.from(this.bookings.values());
     return {
       total: bookings.length,
@@ -309,14 +267,14 @@ export class MemStorage implements IStorage {
     };
   }
 
-  async getUserStats(): Promise<any> {
+  async getUserStats() {
     return {
       total: this.users.size,
       active: this.users.size, // Simplified
     };
   }
 
-  async getRevenueStats(): Promise<any> {
+  async getRevenueStats() {
     const bookings = Array.from(this.bookings.values());
     const revenue = bookings
       .filter(b => b.paymentStatus === "paid")
