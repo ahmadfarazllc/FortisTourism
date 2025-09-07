@@ -1,4 +1,3 @@
-import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Data schemas for Fortis Tourism
@@ -10,6 +9,7 @@ export const User = z.object({
   username: z.string().min(3),
   firstName: z.string(),
   lastName: z.string(),
+  password: z.string().min(6),
   avatar: z.string().url().optional(),
   preferences: z.array(z.string()).default([]),
   stripeCustomerId: z.string().optional(),
